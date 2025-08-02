@@ -3,25 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FunBet - Scommesse Online</title>
+    <title>FunBet - Scommesse Online (Com Configuração Externa)</title>
     
-    <!-- Meta Pixel Code -->
+    <!-- Carregar configurações do Meta -->
+    <script src="meta-config.js"></script>
+    
+    <!-- Facebook Pixel Code -->
     <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '2175913486250174');
-    fbq('track', 'PageView');
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        
+        // Usar configuração externa
+        fbq('init', META_CONFIG.pixelId);
+        fbq('track', 'PageView');
     </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=2175913486250174&ev=PageView&noscript=1"
-    /></noscript>
-    <!-- End Meta Pixel Code -->
+    <noscript>
+        <img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=PIXEL_ID&ev=PageView&noscript=1"/>
+    </noscript>
+    <!-- End Facebook Pixel Code -->
     
     <style>
         * {
@@ -189,47 +195,131 @@
         </div>
     </div>
 
-    <!-- Eventos do Pixel -->
+    <!-- Conversions API Implementation com Configuração Externa -->
     <script>
-        // Event Listeners para rastreamento básico
+        // Validar configurações
+        if (!validateMetaConfig()) {
+            console.warn('⚠️ Configurações do Meta não configuradas corretamente');
+        }
+
+        // Função para enviar eventos para o Conversions API
+        async function sendConversionEvent(eventType, customData = {}) {
+            const eventConfig = getEventConfig(eventType);
+            
+            const event = {
+                event_name: eventConfig.eventName,
+                event_time: Math.floor(Date.now() / 1000),
+                action_source: 'website',
+                event_source_url: window.location.href,
+                user_data: {
+                    client_ip_address: META_CONFIG.tracking.enableIPTracking ? await getClientIP() : '',
+                    client_user_agent: META_CONFIG.tracking.enableUserAgentTracking ? navigator.userAgent : '',
+                    fbc: getFBC(),
+                    fbp: getFBP()
+                },
+                custom_data: {
+                    content_name: META_CONFIG.content.name,
+                    content_category: META_CONFIG.content.category,
+                    content_type: META_CONFIG.content.type,
+                    value: eventConfig.value,
+                    currency: eventConfig.currency,
+                    ...customData
+                }
+            };
+
+            // Enviar para Conversions API
+            try {
+                const response = await fetch(`https://graph.facebook.com/v17.0/${META_CONFIG.pixelId}/events`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        data: [event],
+                        access_token: META_CONFIG.accessToken,
+                        test_event_code: META_CONFIG.testEventCode
+                    })
+                });
+
+                const result = await response.json();
+                console.log('Conversions API Response:', result);
+                
+                // Também enviar para Facebook Pixel (client-side)
+                fbq('track', eventConfig.eventName, event.custom_data);
+                
+            } catch (error) {
+                console.error('Erro ao enviar evento para Conversions API:', error);
+                // Fallback: apenas pixel client-side
+                fbq('track', eventConfig.eventName, event.custom_data);
+            }
+        }
+
+        // Funções auxiliares
+        function getFBC() {
+            const fbc = getCookie('_fbc');
+            return fbc || '';
+        }
+
+        function getFBP() {
+            const fbp = getCookie('_fbp');
+            return fbp || '';
+        }
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return '';
+        }
+
+        async function getClientIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                return '';
+            }
+        }
+
+        // Event Listeners
         document.addEventListener('DOMContentLoaded', function() {
-            // Rastrear visualização da página (já feito pelo pixel)
-            console.log('Página carregada - Pixel ativo');
+            // Rastrear visualização da página
+            sendConversionEvent('viewContent', {
+                content_name: 'FunBet Landing Page Load',
+                content_type: 'landing_page'
+            });
 
             // Rastrear clique no botão CTA
             const ctaButton = document.getElementById('cta-button');
             ctaButton.addEventListener('click', function(e) {
                 // Rastrear Lead
-                fbq('track', 'Lead', {
+                sendConversionEvent('lead', {
                     content_name: 'FunBet CTA Click',
-                    content_category: 'Gambling',
-                    value: 500,
-                    currency: 'EUR'
+                    content_type: 'button_click'
                 });
 
                 // Rastrear AddToCart (simulando interesse)
-                fbq('track', 'AddToCart', {
-                    content_name: 'FunBet Registration',
-                    content_category: 'Gambling',
-                    value: 500,
-                    currency: 'EUR'
+                sendConversionEvent('addToCart', {
+                    content_name: 'FunBet Registration Interest',
+                    content_type: 'registration_intent'
                 });
 
-                console.log('Eventos de conversão enviados');
+                // Aguardar um pouco antes de redirecionar para garantir o envio
+                setTimeout(() => {
+                    // O redirecionamento acontece normalmente
+                }, 100);
             });
 
-            // Rastrear tempo na página (30 segundos)
+            // Rastrear tempo na página
             let timeOnPage = 0;
             setInterval(() => {
                 timeOnPage += 10;
-                if (timeOnPage === 30) {
-                    fbq('track', 'ViewContent', {
-                        content_name: 'FunBet - 30s Engagement',
-                        content_category: 'Gambling',
-                        value: 100,
-                        currency: 'EUR'
+                if (timeOnPage === META_CONFIG.tracking.timeThreshold) {
+                    sendConversionEvent('viewContent', {
+                        content_name: `FunBet - ${META_CONFIG.tracking.timeThreshold}s Engagement`,
+                        content_type: 'time_engagement'
                     });
-                    console.log('Evento de engajamento enviado (30s)');
                 }
             }, 10000);
         });
@@ -237,15 +327,12 @@
         // Rastrear scroll
         let scrollTracked = false;
         window.addEventListener('scroll', function() {
-            if (!scrollTracked && window.scrollY > 100) {
+            if (!scrollTracked && window.scrollY > META_CONFIG.tracking.scrollThreshold) {
                 scrollTracked = true;
-                fbq('track', 'ViewContent', {
+                sendConversionEvent('viewContent', {
                     content_name: 'FunBet - Scroll Engagement',
-                    content_category: 'Gambling',
-                    value: 200,
-                    currency: 'EUR'
+                    content_type: 'scroll_engagement'
                 });
-                console.log('Evento de scroll enviado');
             }
         });
     </script>

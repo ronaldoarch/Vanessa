@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Pixel Básico Facebook</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .pixel-info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste do Pixel Básico Facebook</h1>
+        
+        <div class="pixel-info">
+            <h3>📋 Informações do Pixel</h3>
+            <p><strong>Pixel ID:</strong> 2175913486250174</p>
+            <p><strong>Status:</strong> Configurado para rastreamento básico</p>
+            <p><strong>Eventos:</strong> PageView, ViewContent, Lead, AddToCart</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 Teste de Eventos</h3>
+            <p>Clique nos botões abaixo para testar diferentes eventos:</p>
+            
+            <button class="test-button" onclick="testEvent('PageView')">Testar PageView</button>
+            <button class="test-button" onclick="testEvent('ViewContent')">Testar ViewContent</button>
+            <button class="test-button" onclick="testEvent('Lead')">Testar Lead</button>
+            <button class="test-button" onclick="testEvent('AddToCart')">Testar AddToCart</button>
+            
+            <div id="event-status" class="status info">
+                Aguardando teste de evento...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Teste de Funcionamento</h3>
+            <button class="test-button" onclick="testPixelConnection()">Testar Conexão do Pixel</button>
+            <button class="test-button" onclick="testCookies()">Testar Cookies</button>
+            <button class="test-button" onclick="simulateCTAClick()">Simular Clique CTA</button>
+            
+            <div id="connection-status" class="status info">
+                Aguardando teste de conexão...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Log de Eventos</h3>
+            <div id="event-log" class="log">
+                Log de eventos aparecerá aqui...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📖 Como Verificar</h3>
+            <ol>
+                <li>Abra o DevTools (F12) e vá para a aba Console</li>
+                <li>Clique nos botões de teste acima</li>
+                <li>Verifique se os eventos aparecem no Facebook Events Manager</li>
+                <li>Monitore o log de eventos abaixo</li>
+                <li>Use o Facebook Pixel Helper (extensão do Chrome) para debug</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '2175913486250174');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=2175913486250174&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+
+    <script>
+        // Função para adicionar log
+        function addLog(message, type = 'info') {
+            const log = document.getElementById('event-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            log.textContent += logEntry;
+            log.scrollTop = log.scrollHeight;
+            
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // Função para atualizar status
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+        }
+
+        // Verificar pixel na inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('Página carregada, verificando pixel...');
+            
+            if (typeof fbq !== 'undefined') {
+                updateStatus('connection-status', '✅ Pixel carregado com sucesso', 'success');
+                addLog('✅ Facebook Pixel está funcionando');
+                addLog('Pixel ID: 2175913486250174');
+            } else {
+                updateStatus('connection-status', '❌ Pixel não carregado', 'error');
+                addLog('❌ ERRO: Facebook Pixel não foi carregado');
+            }
+        });
+
+        // Função para testar eventos
+        function testEvent(eventType) {
+            addLog(`Testando evento: ${eventType}`);
+            updateStatus('event-status', `Testando ${eventType}...`, 'info');
+            
+            try {
+                const eventData = {
+                    content_name: `Teste - ${eventType}`,
+                    content_category: 'Gambling',
+                    value: eventType === 'Lead' || eventType === 'AddToCart' ? 500 : 100,
+                    currency: 'EUR'
+                };
+
+                fbq('track', eventType, eventData);
+                
+                updateStatus('event-status', `✅ ${eventType} enviado com sucesso`, 'success');
+                addLog(`✅ Evento ${eventType} enviado para Facebook Pixel`);
+                addLog(`Dados: ${JSON.stringify(eventData)}`);
+                
+            } catch (error) {
+                updateStatus('event-status', `❌ Erro ao testar ${eventType}`, 'error');
+                addLog(`❌ ERRO ao testar ${eventType}: ${error.message}`);
+            }
+        }
+
+        // Função para testar conexão do pixel
+        function testPixelConnection() {
+            addLog('Testando conexão do Facebook Pixel...');
+            updateStatus('connection-status', 'Testando Pixel...', 'info');
+            
+            if (typeof fbq !== 'undefined') {
+                updateStatus('connection-status', '✅ Facebook Pixel carregado', 'success');
+                addLog('✅ Facebook Pixel está funcionando');
+                addLog('Função fbq disponível');
+            } else {
+                updateStatus('connection-status', '❌ Facebook Pixel não carregado', 'error');
+                addLog('❌ ERRO: Facebook Pixel não foi carregado');
+            }
+        }
+
+        // Função para testar cookies
+        function testCookies() {
+            addLog('Testando cookies do Facebook...');
+            updateStatus('connection-status', 'Testando cookies...', 'info');
+            
+            const fbc = getCookie('_fbc');
+            const fbp = getCookie('_fbp');
+            
+            if (fbc || fbp) {
+                updateStatus('connection-status', '✅ Cookies do Facebook encontrados', 'success');
+                addLog(`✅ FBC: ${fbc || 'não encontrado'}`);
+                addLog(`✅ FBP: ${fbp || 'não encontrado'}`);
+            } else {
+                updateStatus('connection-status', '⚠️ Cookies do Facebook não encontrados', 'error');
+                addLog('⚠️ Cookies do Facebook não encontrados (normal em primeira visita)');
+            }
+        }
+
+        // Função para simular clique no CTA
+        function simulateCTAClick() {
+            addLog('Simulando clique no botão CTA...');
+            
+            // Enviar eventos como se fosse um clique real
+            fbq('track', 'Lead', {
+                content_name: 'FunBet CTA Click',
+                content_category: 'Gambling',
+                value: 500,
+                currency: 'EUR'
+            });
+
+            fbq('track', 'AddToCart', {
+                content_name: 'FunBet Registration',
+                content_category: 'Gambling',
+                value: 500,
+                currency: 'EUR'
+            });
+
+            addLog('✅ Eventos de conversão simulados enviados');
+            updateStatus('event-status', '✅ Simulação de CTA concluída', 'success');
+        }
+
+        // Função auxiliar para obter cookies
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return '';
+        }
+
+        // Simular eventos automáticos
+        setTimeout(() => {
+            addLog('Simulando evento de engajamento (30s)...');
+            fbq('track', 'ViewContent', {
+                content_name: 'FunBet - 30s Engagement',
+                content_category: 'Gambling',
+                value: 100,
+                currency: 'EUR'
+            });
+            addLog('✅ Evento de engajamento enviado');
+        }, 30000);
+
+        // Simular evento de scroll
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 100) {
+                addLog('Simulando evento de scroll...');
+                fbq('track', 'ViewContent', {
+                    content_name: 'FunBet - Scroll Engagement',
+                    content_category: 'Gambling',
+                    value: 200,
+                    currency: 'EUR'
+                });
+                addLog('✅ Evento de scroll enviado');
+                // Remover listener para não repetir
+                window.removeEventListener('scroll', arguments.callee);
+            }
+        });
+    </script>
+</body>
+</html> 
