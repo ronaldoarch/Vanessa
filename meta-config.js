@@ -1,7 +1,7 @@
 // Configurações do Meta Conversions API
 const META_CONFIG = {
     // Facebook Pixel ID - Configurado para pixel básico
-    pixelId: '1190912676408753',
+    pixelId: '760417679900324',
     
     // Configuração para pixel básico (sem Conversions API)
     useBasicPixel: true,
