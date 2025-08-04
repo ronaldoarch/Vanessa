@@ -2,7 +2,7 @@
 
 ## ✅ **Configuração Concluída**
 
-Seu pixel está configurado e funcionando com o ID: **2175913486250174**
+Seu pixel está configurado e funcionando com o ID: **1190912676408753**
 
 ## 📁 **Arquivos Principais**
 
@@ -42,7 +42,7 @@ index.html
 
 ### 2. **Facebook Events Manager**
 1. Acesse: [Facebook Events Manager](https://business.facebook.com/events_manager2/)
-2. Selecione seu pixel: **2175913486250174**
+2. Selecione seu pixel: **1190912676408753**
 3. Vá para **Test Events**
 4. Veja eventos em tempo real
 
